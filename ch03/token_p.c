@@ -101,7 +101,7 @@ Token nextTkn(void)
   switch (ctype[ch]){
   case Letter:
     for( ; ctype[ch] == Letter || ctype[ch] == Digit; ch = nextCh()){
-      if (p < p_31) {
+      if (p < p_31) { //このチェック方法全然なじめない...。ポインタを進めて31を超えたらってことだと思うけど。
         *p++ = ch;
       }
     }
@@ -117,12 +117,17 @@ Token nextTkn(void)
   case SngQ:
     ct = 0;
     for(ch = nextCh(); ch != EOF && ch != '\n' && ch != '\''; ch = nextCh()){
-      *p = '\0';
-      if(ch == '\''){
-        ch = nextCh();
+      if(++ct == 1){
+        *p++ = tkn.intVal = ch;
       }else{
         errF = 1;
       }
+    }
+    *p = '\0';
+    if(ch == '\''){
+      ch = nextCh();
+    }else{
+      errF = 1;
     }
     if(errF){
       err_exit("不正な文字定数");
@@ -131,7 +136,7 @@ Token nextTkn(void)
     break;
   case DblQ:
     for(ch = nextCh(); ch != EOF && ch != '\n' && ch != '"'; ch = nextCh()){
-      if(p >= p_100){
+      if(p >= p_100){ //このチェック方法全然なじめない...
         errF = 1;
       }else{
         *p++ = ch;
